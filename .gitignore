@@ -134,3 +134,6 @@ modules.xml
 *.ipr
 
 # End of https://www.gitignore.io/api/android,intellij,intellij+iml
+
+# Ignore files containing API keys
+app/google-services.json
