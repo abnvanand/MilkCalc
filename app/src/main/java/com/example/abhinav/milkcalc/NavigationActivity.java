@@ -46,7 +46,10 @@ public class NavigationActivity extends AppCompatActivity
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
-                    LinearLayout linearLayout = (android.widget.LinearLayout) binding.navigationView.getHeaderView(binding.navigationView.getHeaderCount() - 1);
+                    LinearLayout linearLayout = (LinearLayout)
+                            binding.navigationView
+                                    .getHeaderView(binding.navigationView.getHeaderCount() - 1);
+
                     // TODO: find a way to use data binding somehow
                     TextView textViewUserName = (TextView) linearLayout.findViewById(R.id.userName);
                     TextView textViewEmailId = (TextView) linearLayout.findViewById(R.id.emailId);
@@ -55,7 +58,12 @@ public class NavigationActivity extends AppCompatActivity
                     Timber.d("Profile pic uri %s", user.getPhotoUrl());
                     textViewUserName.setText(user.getDisplayName());
                     textViewEmailId.setText(user.getEmail());
-                    Picasso.with(NavigationActivity.this).load(user.getPhotoUrl()).into(imageViewProfilePicture);
+
+                    // TODO: http://stackoverflow.com/questions/23978828/how-do-i-use-disk-caching-in-picasso
+                    Picasso.with(NavigationActivity.this)
+                            .load(user.getPhotoUrl())
+                            .into(imageViewProfilePicture);
+
                 } else {
                     startActivityForResult(
                             AuthUI.getInstance()
