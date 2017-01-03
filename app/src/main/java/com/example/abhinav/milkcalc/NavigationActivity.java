@@ -88,7 +88,7 @@ public class NavigationActivity extends AppCompatActivity
         billsFragment = new BillsFragment();
 
         getFragmentManager().beginTransaction()
-                .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(), logBookFragment, "logBookFragment")
+                .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(), logBookFragment, LogBookFragment.class.getSimpleName())
                 .commit();
     }
 
