@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.databinding.ActivityNavigationBinding;
 import com.example.abhinav.milkcalc.fragments.BillsFragment;
@@ -120,9 +121,12 @@ public class NavigationActivity extends AppCompatActivity
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "Already signed in", Toast.LENGTH_SHORT).show();
                 // Do whatever you want
             } else {
+                // FIXME: can't open app in offline mode.
                 // Allow app to close on backpress from login screen
+                Toast.makeText(this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
