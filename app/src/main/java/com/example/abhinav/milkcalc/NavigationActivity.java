@@ -21,6 +21,7 @@ import com.example.abhinav.milkcalc.databinding.ActivityNavigationBinding;
 import com.example.abhinav.milkcalc.fragments.BillsFragment;
 import com.example.abhinav.milkcalc.fragments.LogBookFragment;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ui.ResultCodes;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
@@ -123,11 +124,12 @@ public class NavigationActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "Already signed in", Toast.LENGTH_SHORT).show();
                 // Do whatever you want
-            } else {
-                // FIXME: can't open app in offline mode.
-                // Allow app to close on backpress from login screen
+            } else if (resultCode == RESULT_CANCELED) {
+                // Allow app to close on back press from login screen
                 Toast.makeText(this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
                 finish();
+            } else if (resultCode == ResultCodes.RESULT_NO_NETWORK) {
+                Toast.makeText(this, "Offline", Toast.LENGTH_SHORT).show();
             }
         }
     }
