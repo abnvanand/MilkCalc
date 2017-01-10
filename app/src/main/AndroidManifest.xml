@@ -18,6 +18,10 @@
             android:label="@string/title_add_bill"
             android:parentActivityName=".NavigationActivity"/>
         <activity
+            android:name=".activities.AddLogActivity"
+            android:label="@string/title_add_log"
+            android:parentActivityName=".NavigationActivity"/>
+        <activity
             android:name=".NavigationActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
