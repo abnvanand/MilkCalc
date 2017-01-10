@@ -6,14 +6,21 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.R;
+import com.example.abhinav.milkcalc.database.contentProviders.BillsContentProvider;
+import com.example.abhinav.milkcalc.database.tables.BillsTable;
 import com.example.abhinav.milkcalc.databinding.ActivityAddBillBinding;
 import com.example.abhinav.milkcalc.fragments.DatePickerFragment;
+import com.example.abhinav.milkcalc.pojo.Bill;
 
 import java.util.Date;
+
+import timber.log.Timber;
 
 public class AddBillActivity extends AppCompatActivity
         implements DatePickerFragment.OnDateSelectedListener {
@@ -21,9 +28,11 @@ public class AddBillActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_bill);
+        bill = new Bill();
+        binding.setBill(bill);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> fromAdapter = ArrayAdapter.createFromResource(this,
+        final ArrayAdapter<CharSequence> fromAdapter = ArrayAdapter.createFromResource(this,
                 R.array.from_diary_location_array, android.R.layout.simple_spinner_item);
         ArrayAdapter<CharSequence> toAdapter = ArrayAdapter.createFromResource(this,
                 R.array.to_diary_location_array, android.R.layout.simple_spinner_item);
@@ -36,6 +45,9 @@ public class AddBillActivity extends AppCompatActivity
         binding.fromDairySpinner.setAdapter(fromAdapter);
         binding.toDairySpinner.setAdapter(toAdapter);
 
+        binding.fromDairySpinner.setOnItemSelectedListener(onFromDairySelected);
+        binding.toDairySpinner.setOnItemSelectedListener(onToDairySelected);
+
         binding.btnAdd.setOnClickListener(onClickButtonAdd);
         binding.date.setOnClickListener(onClickDate);
     }
@@ -47,18 +59,49 @@ public class AddBillActivity extends AppCompatActivity
 
 
     private ActivityAddBillBinding binding;
+    private Bill bill;
+
     private View.OnClickListener onClickButtonAdd = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Toast.makeText(AddBillActivity.this, "Added", Toast.LENGTH_SHORT).show();
+            Timber.d("Bill : %s", binding.getBill());
+            getContentResolver().insert(BillsContentProvider.CONTENT_URI, BillsTable.buildContentValues(bill));
         }
     };
+
     private View.OnClickListener onClickDate = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             DatePickerFragment pickerFragment = new DatePickerFragment();
             pickerFragment.setOnDateSelectedListener(AddBillActivity.this);
             pickerFragment.show(getFragmentManager(), "datePicker");
+        }
+    };
+
+    private AdapterView.OnItemSelectedListener onFromDairySelected = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            bill.setFromDairy(String.valueOf(textView.getText()));
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
+
+    private AdapterView.OnItemSelectedListener onToDairySelected = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            bill.setToDairy(String.valueOf(textView.getText()));
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
         }
     };
 }
