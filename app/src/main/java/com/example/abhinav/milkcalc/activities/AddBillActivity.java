@@ -2,6 +2,7 @@ package com.example.abhinav.milkcalc.activities;
 
 
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.R;
 import com.example.abhinav.milkcalc.database.contentProviders.BillsContentProvider;
@@ -64,9 +64,10 @@ public class AddBillActivity extends AppCompatActivity
     private View.OnClickListener onClickButtonAdd = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Toast.makeText(AddBillActivity.this, "Added", Toast.LENGTH_SHORT).show();
-            Timber.d("Bill : %s", binding.getBill());
-            getContentResolver().insert(BillsContentProvider.CONTENT_URI, BillsTable.buildContentValues(bill));
+            Uri uri = getContentResolver()
+                    .insert(BillsContentProvider.CONTENT_URI, BillsTable.buildContentValues(bill));
+            Timber.d("Bill inserted at uri: %s", uri);
+            finish();
         }
     };
 
