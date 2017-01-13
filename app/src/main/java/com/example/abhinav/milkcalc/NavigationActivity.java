@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.abhinav.milkcalc.activities.AddBillActivity;
+import com.example.abhinav.milkcalc.activities.AddLogActivity;
 import com.example.abhinav.milkcalc.databinding.ActivityNavigationBinding;
 import com.example.abhinav.milkcalc.fragments.BillsFragment;
 import com.example.abhinav.milkcalc.fragments.LogBookFragment;
@@ -79,11 +80,16 @@ public class NavigationActivity extends AppCompatActivity
                 }
             }
         };
+
+        currentBackStackEntry = LogBookFragment.class.getSimpleName();
         binding.appBarNavigation.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (currentBackStackEntry.equals(BillsFragment.class.getSimpleName())) {
+                    startActivity(new Intent(NavigationActivity.this, AddBillActivity.class));
+                } else if (currentBackStackEntry.equals(LogBookFragment.class.getSimpleName())) {
+                    startActivity(new Intent(NavigationActivity.this, AddLogActivity.class));
+                }
             }
         });
 
@@ -97,15 +103,16 @@ public class NavigationActivity extends AppCompatActivity
         logBookFragment = new LogBookFragment();
         billsFragment = new BillsFragment();
 
-        getFragmentManager().beginTransaction()
-                .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(), logBookFragment, LogBookFragment.class.getSimpleName())
+        getSupportFragmentManager().beginTransaction()
+                .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(),
+                        logBookFragment, LogBookFragment.class.getSimpleName())
                 .commit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+//        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
@@ -172,13 +179,16 @@ public class NavigationActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_log_book) {
-            getFragmentManager().beginTransaction()
+            currentBackStackEntry = LogBookFragment.class.getSimpleName();
+            getSupportFragmentManager().beginTransaction()
                     .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(),
                             logBookFragment,
                             LogBookFragment.class.getSimpleName())
                     .commit();
         } else if (id == R.id.nav_bill) {
-            getFragmentManager().beginTransaction()
+            currentBackStackEntry = BillsFragment.class.getSimpleName();
+
+            getSupportFragmentManager().beginTransaction()
                     .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(),
                             billsFragment,
                             BillsFragment.class.getSimpleName())
@@ -198,4 +208,5 @@ public class NavigationActivity extends AppCompatActivity
     private BillsFragment billsFragment;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private String currentBackStackEntry;
 }
