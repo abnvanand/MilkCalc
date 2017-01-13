@@ -1,11 +1,14 @@
 package com.example.abhinav.milkcalc.database.tables;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
 import com.example.abhinav.milkcalc.pojo.Bill;
+import com.google.gson.Gson;
 
 import timber.log.Timber;
 
@@ -53,9 +56,28 @@ public final class BillsTable implements BaseColumns {
         onCreate(database);
     }
 
+
+    public static Bill from(@NonNull Context context, @NonNull Cursor cursor) {
+        Bill bill = new Bill();
+        bill._ID = cursor.getLong(Query.COLUMN_ID);
+        bill.serverID = cursor.getString(Query.COLUMN_SERVER_ID);
+        bill.tankerNumber = cursor.getString(Query.COLUMN_TANKER_NUMBER);
+        bill.fromDairy = cursor.getString(Query.COLUMN_FROM_DAIRY);
+        bill.toDairy = cursor.getString(Query.COLUMN_TO_DAIRY);
+        bill.distance = cursor.getString(Query.COLUMN_DISTANCE);
+        bill.dieselTotal = cursor.getString(Query.COLUMN_DIESEL);
+        bill.average= cursor.getString(Query.COLUMN_AVERAGE);
+        bill.balanceHSD = cursor.getString(Query.COLUMN_BALANCE_HSD);
+        bill.cash= cursor.getString(Query.COLUMN_CASH);
+        bill.tollTax = cursor.getString(Query.COLUMN_TOLL_TAX) ;
+        bill.balanceCash = cursor.getString(Query.COLUMN_BALANCE_CASH);
+
+        return bill;
+    }
+
     public static ContentValues buildContentValues(@NonNull Bill bill) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(SERVER_ID, bill.serverId);
+        contentValues.put(SERVER_ID, bill.serverID);
         contentValues.put(TANKER_NUMBER, bill.tankerNumber);
         contentValues.put(FROM_DAIRY, bill.fromDairy);
         contentValues.put(TO_DAIRY, bill.toDairy);
@@ -68,5 +90,27 @@ public final class BillsTable implements BaseColumns {
         contentValues.put(BALANCE_CASH, bill.balanceCash);
 
         return contentValues;
+    }
+
+    public static final class Query {
+        public static final String[] PROJECTION = {
+                _ID, SERVER_ID, TANKER_NUMBER, FROM_DAIRY,
+                TO_DAIRY, DISTANCE, DIESEL,
+                AVERAGE, BALANCE_HSD, CASH,
+                TOLL_TAX, BALANCE_CASH
+        };
+
+        public static final int COLUMN_ID = 0;
+        public static final int COLUMN_SERVER_ID = 1;
+        public static final int COLUMN_TANKER_NUMBER= 2;
+        public static final int COLUMN_FROM_DAIRY= 3;
+        public static final int COLUMN_TO_DAIRY= 4;
+        public static final int COLUMN_DISTANCE= 5;
+        public static final int COLUMN_DIESEL= 6;
+        public static final int COLUMN_AVERAGE= 7;
+        public static final int COLUMN_BALANCE_HSD= 8;
+        public static final int COLUMN_CASH= 9;
+        public static final int COLUMN_TOLL_TAX= 10;
+        public static final int COLUMN_BALANCE_CASH= 11;
     }
 }
