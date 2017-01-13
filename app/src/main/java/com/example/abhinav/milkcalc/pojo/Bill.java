@@ -10,18 +10,18 @@ import com.example.abhinav.milkcalc.BR;
 import java.io.Serializable;
 
 public class Bill extends BaseObservable implements Serializable {
-    public String serverId;
+    public long _ID;
+
+    public String serverID;
     public String date;
     public String tankerNumber;
     public String fromDairy;
     public String toDairy;
     public String distance;
-
     public String dieselPP1;
     public String dieselPP2;
     public String dieselPP3;
     public String dieselTotal;
-
     public String average;
     public String balanceHSD;
     public String cash;
@@ -29,12 +29,12 @@ public class Bill extends BaseObservable implements Serializable {
     public String balanceCash;
 
     @Bindable
-    public String getServerId() {
-        return serverId;
+    public String getServerID() {
+        return serverID;
     }
 
-    public void setServerId(String serverId) {
-        this.serverId = serverId;
+    public void setServerID(String serverID) {
+        this.serverID = serverID;
     }
 
     @Bindable
