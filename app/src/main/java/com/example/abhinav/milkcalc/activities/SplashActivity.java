@@ -3,10 +3,10 @@ package com.example.abhinav.milkcalc.activities;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.NavigationActivity;
@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
-public class SplashActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
+public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthStateListener {
     public static final int RC_SIGN_IN = 1;
 
     @Override
@@ -67,7 +67,7 @@ public class SplashActivity extends AppCompatActivity implements FirebaseAuth.Au
         if (user != null) {
             startActivity(new Intent(SplashActivity.this, NavigationActivity.class));
             finish();
-        } else {
+        } else if (isNetworkConnected) {
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
