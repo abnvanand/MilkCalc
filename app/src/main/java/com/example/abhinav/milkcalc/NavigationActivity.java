@@ -14,72 +14,29 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.activities.AddBillActivity;
 import com.example.abhinav.milkcalc.activities.AddLogActivity;
+import com.example.abhinav.milkcalc.activities.SplashActivity;
 import com.example.abhinav.milkcalc.databinding.ActivityNavigationBinding;
 import com.example.abhinav.milkcalc.fragments.BillsFragment;
 import com.example.abhinav.milkcalc.fragments.LogBookFragment;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ui.ResultCodes;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
-import java.util.Arrays;
-
 import timber.log.Timber;
 
 public class NavigationActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-    public static final int RC_SIGN_IN = 1;
+        implements NavigationView.OnNavigationItemSelectedListener, FirebaseAuth.AuthStateListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_navigation);
         setSupportActionBar(binding.appBarNavigation.toolbar);
-
         mFirebaseAuth = FirebaseAuth.getInstance();
-
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                if (user != null) {
-                    LinearLayout linearLayout = (LinearLayout)
-                            binding.navigationView
-                                    .getHeaderView(binding.navigationView.getHeaderCount() - 1);
-
-                    // TODO: find a way to use data binding somehow
-                    TextView textViewUserName = (TextView) linearLayout.findViewById(R.id.userName);
-                    TextView textViewEmailId = (TextView) linearLayout.findViewById(R.id.emailId);
-                    ImageView imageViewProfilePicture = (ImageView) linearLayout.findViewById(R.id.profilePicture);
-
-                    Timber.d("Profile pic uri %s", user.getPhotoUrl());
-                    textViewUserName.setText(user.getDisplayName());
-                    textViewEmailId.setText(user.getEmail());
-
-                    // TODO: http://stackoverflow.com/questions/23978828/how-do-i-use-disk-caching-in-picasso
-                    Picasso.with(NavigationActivity.this)
-                            .load(user.getPhotoUrl())
-                            .into(imageViewProfilePicture);
-
-                } else {
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setIsSmartLockEnabled(false)
-                                    .setProviders(Arrays.asList(
-                                            new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
-                                    .build(),
-                            RC_SIGN_IN);
-                }
-            }
-        };
 
         currentBackStackEntry = LogBookFragment.class.getSimpleName();
         binding.appBarNavigation.fab.setOnClickListener(new View.OnClickListener() {
@@ -112,33 +69,13 @@ public class NavigationActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-//        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        mFirebaseAuth.addAuthStateListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mAuthStateListener != null) {
-            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
-                Toast.makeText(this, "Already signed in", Toast.LENGTH_SHORT).show();
-                // Do whatever you want
-            } else if (resultCode == RESULT_CANCELED) {
-                // Allow app to close on back press from login screen
-                Toast.makeText(this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
-                finish();
-            } else if (resultCode == ResultCodes.RESULT_NO_NETWORK) {
-                Toast.makeText(this, "Offline", Toast.LENGTH_SHORT).show();
-            }
-        }
+        mFirebaseAuth.removeAuthStateListener(this);
     }
 
     @Override
@@ -203,10 +140,37 @@ public class NavigationActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        if (user == null) {
+            startActivity(new Intent(this, SplashActivity.class));
+            finish();
+        } else {
+            LinearLayout linearLayout = (LinearLayout)
+                    binding.navigationView
+                            .getHeaderView(binding.navigationView.getHeaderCount() - 1);
+
+            // TODO: find a way to use data binding somehow
+            TextView textViewUserName = (TextView) linearLayout.findViewById(R.id.userName);
+            TextView textViewEmailId = (TextView) linearLayout.findViewById(R.id.emailId);
+            ImageView imageViewProfilePicture = (ImageView) linearLayout.findViewById(R.id.profilePicture);
+
+            Timber.d("Profile pic uri %s", user.getPhotoUrl());
+            textViewUserName.setText(user.getDisplayName());
+            textViewEmailId.setText(user.getEmail());
+
+            // TODO: http://stackoverflow.com/questions/23978828/how-do-i-use-disk-caching-in-picasso
+            Picasso.with(NavigationActivity.this)
+                    .load(user.getPhotoUrl())
+                    .into(imageViewProfilePicture);
+        }
+    }
+
     private ActivityNavigationBinding binding;
     private LogBookFragment logBookFragment;
     private BillsFragment billsFragment;
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private String currentBackStackEntry;
+    private FirebaseAuth mFirebaseAuth;
 }
