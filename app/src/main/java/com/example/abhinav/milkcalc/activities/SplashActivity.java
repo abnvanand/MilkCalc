@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.NavigationActivity;
@@ -28,6 +29,8 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
+
+        binding.btnRetry.setOnClickListener(onClickBtnRetry);
     }
 
     @Override
@@ -61,6 +64,20 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
     }
 
     @Override
+    protected void onNetworkStateConnected(@NonNull NetworkInfo networkInfo) {
+        super.onNetworkStateConnected(networkInfo);
+        binding.btnRetry.setVisibility(View.VISIBLE);
+        binding.linearLayoutOffline.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onNetworkStateDisconnected() {
+        super.onNetworkStateDisconnected();
+        binding.btnRetry.setVisibility(View.GONE);
+        binding.btnRetry.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -82,4 +99,10 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
 
     private ActivitySplashBinding binding;
     private FirebaseAuth mFirebaseAuth;
+    private View.OnClickListener onClickBtnRetry = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            onAuthStateChanged(mFirebaseAuth);
+        }
+    };
 }

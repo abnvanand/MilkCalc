@@ -13,9 +13,35 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context="com.example.abhinav.milkcalc.MainActivity">
 
-        <ProgressBar
+        <LinearLayout
+            android:id="@+id/linearLayoutOffline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Looks like you are offline.\nConnect to the internet and try again"
+                android:textAlignment="center"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/btnRetry"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="?colorAccent"
+            android:text="Try Again"
+            android:textColor="@android:color/white" />
     </RelativeLayout>
 </layout>
