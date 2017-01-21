@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.adapters.LogsAdapter;
 import com.example.abhinav.milkcalc.databinding.FragmentLogBookBinding;
@@ -24,7 +25,7 @@ import java.util.ListIterator;
 
 import timber.log.Timber;
 
-public class LogBookFragment extends Fragment {
+public class LogBookFragment extends Fragment implements LogsAdapter.OnItemClickedListener {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,6 +48,7 @@ public class LogBookFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         adapter = new LogsAdapter(logs);
+        adapter.setOnItemClickedListener(this);
         binding.recyclerView.setAdapter(adapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext(),
@@ -68,6 +70,11 @@ public class LogBookFragment extends Fragment {
     public void onPause() {
         super.onPause();
         logsRef.removeEventListener(mChildEventListener);
+    }
+
+    @Override
+    public void onClick(Log log) {
+        Toast.makeText(getActivity(), "Log id" + log.serverID, Toast.LENGTH_SHORT).show();
     }
 
     private FragmentLogBookBinding binding;

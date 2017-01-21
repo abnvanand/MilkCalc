@@ -48,10 +48,27 @@ public class LogsAdapter extends RecyclerView.Adapter<LogsAdapter.ViewHolder> {
         public ViewHolder(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
+
+            binding.getRoot().setOnClickListener(
+                    v -> {
+                        if(onItemClickedListener==null) return;
+
+                        onItemClickedListener.onClick(binding.getLog());
+                    });
         }
 
         public ItemLogBinding getBinding() {
             return binding;
         }
+    }
+
+    private OnItemClickedListener onItemClickedListener;
+
+    public void setOnItemClickedListener(OnItemClickedListener onItemClickedListener) {
+        this.onItemClickedListener = onItemClickedListener;
+    }
+
+    public interface OnItemClickedListener {
+        void onClick(Log log);
     }
 }

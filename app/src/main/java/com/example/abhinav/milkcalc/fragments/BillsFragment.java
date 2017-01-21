@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.adapters.BillsAdapter;
 import com.example.abhinav.milkcalc.databinding.FragmentBillsBinding;
@@ -24,7 +25,7 @@ import java.util.ListIterator;
 
 import timber.log.Timber;
 
-public class BillsFragment extends Fragment {
+public class BillsFragment extends Fragment implements BillsAdapter.OnItemClickedListener {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +49,7 @@ public class BillsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         adapter = new BillsAdapter(bills);
+        adapter.setOnItemClickedListener(this);
         binding.recyclerView.setAdapter(adapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext(),
@@ -69,6 +71,11 @@ public class BillsFragment extends Fragment {
     public void onPause() {
         super.onPause();
         billsRef.removeEventListener(mChildEventListener);
+    }
+
+    @Override
+    public void onClick(Bill bill) {
+        Toast.makeText(getActivity(), "Bill id" + bill.serverID, Toast.LENGTH_SHORT).show();
     }
 
     private BillsAdapter adapter;

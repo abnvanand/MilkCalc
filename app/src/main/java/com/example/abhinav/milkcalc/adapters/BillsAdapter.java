@@ -48,10 +48,29 @@ public class BillsAdapter extends RecyclerView.Adapter<BillsAdapter.ViewHolder> 
         public ViewHolder(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
+
+
+            binding.getRoot().setOnClickListener(
+                    v -> {
+                        if (onItemClickedListener == null) return;
+
+                        onItemClickedListener.onClick(binding.getBill());
+                    });
         }
 
         public ItemBillBinding getBinding() {
             return binding;
         }
+    }
+
+
+    private OnItemClickedListener onItemClickedListener;
+
+    public void setOnItemClickedListener(OnItemClickedListener onItemClickedListener) {
+        this.onItemClickedListener = onItemClickedListener;
+    }
+
+    public interface OnItemClickedListener {
+        void onClick(Bill bill);
     }
 }
