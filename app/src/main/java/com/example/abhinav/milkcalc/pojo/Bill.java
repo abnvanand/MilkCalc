@@ -10,9 +10,9 @@ import com.example.abhinav.milkcalc.BR;
 import java.io.Serializable;
 
 public class Bill extends BaseObservable implements Serializable {
-    public long _ID;
-
+    // Contains firebase push Id
     public String serverID;
+
     public String date;
     public String tankerNumber;
     public String fromDairy;
