@@ -6,12 +6,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.R;
 import com.example.abhinav.milkcalc.databinding.ActivityAddLogBinding;
 import com.example.abhinav.milkcalc.fragments.DatePickerFragment;
+import com.example.abhinav.milkcalc.pojo.Log;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
 
@@ -21,6 +26,12 @@ public class AddLogActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_log);
+        log = new Log();
+        binding.setLog(log);
+
+        // Get logs ref
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        logsRef = database.getReference("logs");
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> fromAdapter = ArrayAdapter.createFromResource(this,
@@ -36,6 +47,9 @@ public class AddLogActivity extends AppCompatActivity
         binding.fromDairySpinner.setAdapter(fromAdapter);
         binding.toDairySpinner.setAdapter(toAdapter);
 
+        // Set listeners
+        binding.fromDairySpinner.setOnItemSelectedListener(onFromDairySelected);
+        binding.toDairySpinner.setOnItemSelectedListener(onToDairySelected);
         binding.btnAdd.setOnClickListener(onClickButtonAdd);
         binding.date.setOnClickListener(onClickDate);
     }
@@ -47,18 +61,47 @@ public class AddLogActivity extends AppCompatActivity
 
 
     private ActivityAddLogBinding binding;
+    private Log log;
+    private DatabaseReference logsRef;
+
     private View.OnClickListener onClickButtonAdd = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Toast.makeText(AddLogActivity.this, "Added", Toast.LENGTH_SHORT).show();
+            logsRef.push().setValue(log);
+            finish();
         }
     };
-    private View.OnClickListener onClickDate = new View.OnClickListener() {
+
+    private View.OnClickListener onClickDate = v -> {
+        DatePickerFragment pickerFragment = new DatePickerFragment();
+        pickerFragment.setOnDateSelectedListener(AddLogActivity.this);
+        pickerFragment.show(getFragmentManager(), "datePicker");
+    };
+
+    private AdapterView.OnItemSelectedListener onFromDairySelected = new AdapterView.OnItemSelectedListener() {
         @Override
-        public void onClick(View v) {
-            DatePickerFragment pickerFragment = new DatePickerFragment();
-            pickerFragment.setOnDateSelectedListener(AddLogActivity.this);
-            pickerFragment.show(getFragmentManager(), "datePicker");
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            log.setFromDairy(String.valueOf(textView.getText()));
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
+
+    private AdapterView.OnItemSelectedListener onToDairySelected = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            log.setToDairy(String.valueOf(textView.getText()));
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
         }
     };
 }
