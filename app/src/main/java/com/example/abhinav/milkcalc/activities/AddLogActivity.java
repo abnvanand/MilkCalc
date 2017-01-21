@@ -28,7 +28,7 @@ public class AddLogActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_log);
 
-        log = (Log) getIntent().getSerializableExtra("EXTRA_BILL");
+        log = (Log) getIntent().getSerializableExtra("EXTRA_LOG");
         if (log == null) log = new Log();
         binding.setLog(log);
 
