@@ -27,6 +27,8 @@ import java.util.ListIterator;
 
 import timber.log.Timber;
 
+import static com.example.abhinav.milkcalc.utils.Constants.EXTRA_BILL;
+
 public class BillsFragment extends Fragment implements BillsAdapter.OnItemClickedListener {
 
     @Override
@@ -79,7 +81,7 @@ public class BillsFragment extends Fragment implements BillsAdapter.OnItemClicke
     public void onClick(Bill bill) {
         Toast.makeText(getActivity(), "Bill id" + bill.serverID, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getContext(), AddBillActivity.class);
-        intent.putExtra("EXTRA_BILL",bill);
+        intent.putExtra(EXTRA_BILL, bill);
         startActivity(intent);
     }
 

@@ -21,6 +21,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
 
+import static com.example.abhinav.milkcalc.utils.Constants.EXTRA_BILL;
+
 public class AddBillActivity extends AppCompatActivity
         implements DatePickerFragment.OnDateSelectedListener {
     @Override
@@ -28,7 +30,7 @@ public class AddBillActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_bill);
 
-        bill = (Bill) getIntent().getSerializableExtra("EXTRA_BILL");
+        bill = (Bill) getIntent().getSerializableExtra(EXTRA_BILL);
         if (bill == null) bill = new Bill();
         binding.setBill(bill);
 

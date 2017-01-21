@@ -21,6 +21,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
 
+import static com.example.abhinav.milkcalc.utils.Constants.EXTRA_LOG;
+
 public class AddLogActivity extends AppCompatActivity
         implements DatePickerFragment.OnDateSelectedListener {
     @Override
@@ -28,7 +30,7 @@ public class AddLogActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_log);
 
-        log = (Log) getIntent().getSerializableExtra("EXTRA_LOG");
+        log = (Log) getIntent().getSerializableExtra(EXTRA_LOG);
         if (log == null) log = new Log();
         binding.setLog(log);
 

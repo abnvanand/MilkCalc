@@ -27,6 +27,8 @@ import java.util.ListIterator;
 
 import timber.log.Timber;
 
+import static com.example.abhinav.milkcalc.utils.Constants.EXTRA_LOG;
+
 public class LogBookFragment extends Fragment implements LogsAdapter.OnItemClickedListener {
 
     @Override
@@ -78,7 +80,7 @@ public class LogBookFragment extends Fragment implements LogsAdapter.OnItemClick
     public void onClick(Log log) {
         Toast.makeText(getActivity(), "Log id" + log.serverID, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getContext(), AddLogActivity.class);
-        intent.putExtra("EXTRA_LOG",log);
+        intent.putExtra(EXTRA_LOG, log);
         startActivity(intent);
     }
 
