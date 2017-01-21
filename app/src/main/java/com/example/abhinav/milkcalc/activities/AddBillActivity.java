@@ -2,7 +2,6 @@ package com.example.abhinav.milkcalc.activities;
 
 
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,14 +12,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.R;
-import com.example.abhinav.milkcalc.database.tables.BillsTable;
 import com.example.abhinav.milkcalc.databinding.ActivityAddBillBinding;
 import com.example.abhinav.milkcalc.fragments.DatePickerFragment;
 import com.example.abhinav.milkcalc.pojo.Bill;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
-
-import timber.log.Timber;
 
 public class AddBillActivity extends AppCompatActivity
         implements DatePickerFragment.OnDateSelectedListener {
@@ -30,6 +28,10 @@ public class AddBillActivity extends AppCompatActivity
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_bill);
         bill = new Bill();
         binding.setBill(bill);
+
+        // Get bills ref
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        billsRef = database.getReference("bills");
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         final ArrayAdapter<CharSequence> fromAdapter = ArrayAdapter.createFromResource(this,
@@ -60,11 +62,13 @@ public class AddBillActivity extends AppCompatActivity
 
     private ActivityAddBillBinding binding;
     private Bill bill;
+    private DatabaseReference billsRef;
 
     private View.OnClickListener onClickButtonAdd = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Toast.makeText(AddBillActivity.this, bill.toString(), Toast.LENGTH_SHORT).show();
+            billsRef.push().setValue(bill);
             finish();
         }
     };
