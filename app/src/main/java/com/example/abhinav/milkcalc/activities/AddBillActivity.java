@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,7 +27,9 @@ public class AddBillActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_bill);
-        bill = new Bill();
+
+        bill = (Bill) getIntent().getSerializableExtra("EXTRA_BILL");
+        if (bill == null) bill = new Bill();
         binding.setBill(bill);
 
         // Get bills ref
@@ -43,9 +46,19 @@ public class AddBillActivity extends AppCompatActivity
         fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Apply the fromAdapter to the spinner
+        // Apply the adapters to the spinner
         binding.fromDairySpinner.setAdapter(fromAdapter);
         binding.toDairySpinner.setAdapter(toAdapter);
+
+        if (!TextUtils.isEmpty(bill.fromDairy)) {
+            int spinnerPosition = fromAdapter.getPosition(bill.fromDairy);
+            binding.fromDairySpinner.setSelection(spinnerPosition);
+        }
+
+        if (!TextUtils.isEmpty(bill.toDairy)) {
+            int spinnerPosition = fromAdapter.getPosition(bill.toDairy);
+            binding.toDairySpinner.setSelection(spinnerPosition);
+        }
 
         binding.fromDairySpinner.setOnItemSelectedListener(onFromDairySelected);
         binding.toDairySpinner.setOnItemSelectedListener(onToDairySelected);
@@ -65,8 +78,16 @@ public class AddBillActivity extends AppCompatActivity
     private DatabaseReference billsRef;
 
     private View.OnClickListener onClickButtonAdd = v -> {
-        Toast.makeText(AddBillActivity.this, "Adding", Toast.LENGTH_SHORT).show();
-        billsRef.push().setValue(bill);
+        Toast.makeText(AddBillActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+
+        if (TextUtils.isEmpty(bill.serverID)) {
+            // No serverId this means its a new entry
+            billsRef.push().setValue(bill);
+        } else {
+            // Update existing item
+            billsRef.child(bill.serverID).setValue(bill);
+        }
+
         finish();
     };
 

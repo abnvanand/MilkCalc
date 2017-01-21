@@ -8,6 +8,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_add_bill">Add bill</string>
     <string name="title_add_log">Add Log</string>
+    <string name="text_submit">Submit</string>
 
     <string-array name="from_diary_location_array">
         <item>Mirapur</item>

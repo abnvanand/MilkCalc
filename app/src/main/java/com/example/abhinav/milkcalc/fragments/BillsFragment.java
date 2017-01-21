@@ -1,6 +1,7 @@
 package com.example.abhinav.milkcalc.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.abhinav.milkcalc.activities.AddBillActivity;
 import com.example.abhinav.milkcalc.adapters.BillsAdapter;
 import com.example.abhinav.milkcalc.databinding.FragmentBillsBinding;
 import com.example.abhinav.milkcalc.pojo.Bill;
@@ -76,6 +78,9 @@ public class BillsFragment extends Fragment implements BillsAdapter.OnItemClicke
     @Override
     public void onClick(Bill bill) {
         Toast.makeText(getActivity(), "Bill id" + bill.serverID, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getContext(), AddBillActivity.class);
+        intent.putExtra("EXTRA_BILL",bill);
+        startActivity(intent);
     }
 
     private BillsAdapter adapter;
