@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.ListIterator;
 
 import timber.log.Timber;
 
@@ -96,9 +96,14 @@ public class BillsFragment extends Fragment {
         @Override
         public void onChildRemoved(final DataSnapshot dataSnapshot) {
             // FIXME: This will get bad as the list grows. Find a better way
-            Iterator<Bill> iterator = bills.iterator();
-            while (iterator.hasNext()) {
-                if (iterator.next().serverID.equals(dataSnapshot.getKey())) {
+            // This is called every time you add a new Item to the list if offline feature is enabled.
+            // bcoz firebase adds the child first to cache then removes it
+            // then adds it again as a response from server.
+            // So it would be better if we start form the end moving backwards
+            ListIterator<Bill> iterator = bills.listIterator(bills.size());
+
+            while (iterator.hasPrevious()) {
+                if (iterator.previous().serverID.equals(dataSnapshot.getKey())) {
                     iterator.remove();
                     break;
                 }
