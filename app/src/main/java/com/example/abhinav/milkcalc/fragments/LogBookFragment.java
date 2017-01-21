@@ -1,6 +1,7 @@
 package com.example.abhinav.milkcalc.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.abhinav.milkcalc.activities.AddLogActivity;
 import com.example.abhinav.milkcalc.adapters.LogsAdapter;
 import com.example.abhinav.milkcalc.databinding.FragmentLogBookBinding;
 import com.example.abhinav.milkcalc.pojo.Log;
@@ -75,6 +77,9 @@ public class LogBookFragment extends Fragment implements LogsAdapter.OnItemClick
     @Override
     public void onClick(Log log) {
         Toast.makeText(getActivity(), "Log id" + log.serverID, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getContext(), AddLogActivity.class);
+        intent.putExtra("EXTRA_LOG",log);
+        startActivity(intent);
     }
 
     private FragmentLogBookBinding binding;

@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,7 +27,9 @@ public class AddLogActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_log);
-        log = new Log();
+
+        log = (Log) getIntent().getSerializableExtra("EXTRA_BILL");
+        if (log == null) log = new Log();
         binding.setLog(log);
 
         // Get logs ref
@@ -43,9 +46,19 @@ public class AddLogActivity extends AppCompatActivity
         fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Apply the fromAdapter to the spinner
+        // Apply the adapters to the spinner
         binding.fromDairySpinner.setAdapter(fromAdapter);
         binding.toDairySpinner.setAdapter(toAdapter);
+
+        if (!TextUtils.isEmpty(log.fromDairy)) {
+            int spinnerPosition = fromAdapter.getPosition(log.fromDairy);
+            binding.fromDairySpinner.setSelection(spinnerPosition);
+        }
+
+        if (!TextUtils.isEmpty(log.toDairy)) {
+            int spinnerPosition = fromAdapter.getPosition(log.toDairy);
+            binding.toDairySpinner.setSelection(spinnerPosition);
+        }
 
         // Set listeners
         binding.fromDairySpinner.setOnItemSelectedListener(onFromDairySelected);
@@ -67,8 +80,15 @@ public class AddLogActivity extends AppCompatActivity
     private View.OnClickListener onClickButtonAdd = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Toast.makeText(AddLogActivity.this, "Added", Toast.LENGTH_SHORT).show();
-            logsRef.push().setValue(log);
+            Toast.makeText(AddLogActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+
+            if (TextUtils.isEmpty(log.serverID)) {
+                // No serverId this means its a new entry
+                logsRef.push().setValue(log);
+            } else {
+                // Update existing item
+                logsRef.child(log.serverID).setValue(log);
+            }
             finish();
         }
     };
