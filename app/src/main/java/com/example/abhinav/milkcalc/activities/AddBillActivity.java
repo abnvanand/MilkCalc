@@ -34,7 +34,7 @@ public class AddBillActivity extends AppCompatActivity
         billsRef = database.getReference("bills");
 
         // Create an ArrayAdapter using the string array and a default spinner layout
-        final ArrayAdapter<CharSequence> fromAdapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter<CharSequence> fromAdapter = ArrayAdapter.createFromResource(this,
                 R.array.from_diary_location_array, android.R.layout.simple_spinner_item);
         ArrayAdapter<CharSequence> toAdapter = ArrayAdapter.createFromResource(this,
                 R.array.to_diary_location_array, android.R.layout.simple_spinner_item);
@@ -64,22 +64,16 @@ public class AddBillActivity extends AppCompatActivity
     private Bill bill;
     private DatabaseReference billsRef;
 
-    private View.OnClickListener onClickButtonAdd = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Toast.makeText(AddBillActivity.this, bill.toString(), Toast.LENGTH_SHORT).show();
-            billsRef.push().setValue(bill);
-            finish();
-        }
+    private View.OnClickListener onClickButtonAdd = v -> {
+        Toast.makeText(AddBillActivity.this, "Adding", Toast.LENGTH_SHORT).show();
+        billsRef.push().setValue(bill);
+        finish();
     };
 
-    private View.OnClickListener onClickDate = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            DatePickerFragment pickerFragment = new DatePickerFragment();
-            pickerFragment.setOnDateSelectedListener(AddBillActivity.this);
-            pickerFragment.show(getFragmentManager(), "datePicker");
-        }
+    private View.OnClickListener onClickDate = v -> {
+        DatePickerFragment pickerFragment = new DatePickerFragment();
+        pickerFragment.setOnDateSelectedListener(AddBillActivity.this);
+        pickerFragment.show(getFragmentManager(), "datePicker");
     };
 
     private AdapterView.OnItemSelectedListener onFromDairySelected = new AdapterView.OnItemSelectedListener() {
