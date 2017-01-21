@@ -1,6 +1,5 @@
 package com.example.abhinav.milkcalc.adapters;
 
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
@@ -10,32 +9,37 @@ import android.view.ViewGroup;
 
 import com.example.abhinav.milkcalc.BR;
 import com.example.abhinav.milkcalc.R;
-import com.example.abhinav.milkcalc.database.tables.BillsTable;
 import com.example.abhinav.milkcalc.databinding.ItemBillBinding;
 import com.example.abhinav.milkcalc.pojo.Bill;
 
-public class BillsAdapter extends CursorRecyclerViewAdapter<BillsAdapter.ViewHolder> {
+import java.util.ArrayList;
 
-    public BillsAdapter(Cursor cursor) {
-        super(cursor);
+public class BillsAdapter extends RecyclerView.Adapter<BillsAdapter.ViewHolder> {
+    private ArrayList<Bill> bills;
+
+    public BillsAdapter(ArrayList<Bill> bills) {
+        this.bills = bills;
     }
 
     @Override
-    public void onBindViewHolder(BillsAdapter.ViewHolder viewHolder, Cursor cursor) {
-        Bill bill = BillsTable.from(viewHolder.getBinding().getRoot().getContext(), cursor);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_bill, parent, false);
 
-        ViewDataBinding holderBinding = viewHolder.getBinding();
+        return new ViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Bill bill = bills.get(position);
+        ViewDataBinding holderBinding = holder.getBinding();
         holderBinding.setVariable(BR.bill, bill);
         holderBinding.executePendingBindings();
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_bill, parent, false);
-
-        // set the view's size, margins, paddings and layout parameters
-        return new ViewHolder(v);
+    public int getItemCount() {
+        return bills.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
