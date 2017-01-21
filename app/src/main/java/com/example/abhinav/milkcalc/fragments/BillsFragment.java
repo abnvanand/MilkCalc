@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import timber.log.Timber;
 
@@ -32,12 +33,6 @@ public class BillsFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         billsRef = database.getReference("bills");
         bills = new ArrayList<>();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        billsRef.addChildEventListener(mChildEventListener);
     }
 
     @Nullable
@@ -61,6 +56,13 @@ public class BillsFragment extends Fragment {
         binding.recyclerView.setLayoutManager(linearLayoutManager);
         binding.recyclerView.addItemDecoration(
                 new DividerItemDecoration(getActivity(), linearLayoutManager.getOrientation()));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bills.clear();
+        billsRef.addChildEventListener(mChildEventListener);
     }
 
     @Override
@@ -92,7 +94,16 @@ public class BillsFragment extends Fragment {
         }
 
         @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
+        public void onChildRemoved(final DataSnapshot dataSnapshot) {
+            // FIXME: This will get bad as the list grows. Find a better way
+            Iterator<Bill> iterator = bills.iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().serverID.equals(dataSnapshot.getKey())) {
+                    iterator.remove();
+                    break;
+                }
+            }
+            adapter.notifyDataSetChanged();
             Timber.d("Removed key is: %s", dataSnapshot.getKey());
         }
 
