@@ -10,9 +10,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.R;
-import com.example.abhinav.milkcalc.database.contentProviders.BillsContentProvider;
 import com.example.abhinav.milkcalc.database.tables.BillsTable;
 import com.example.abhinav.milkcalc.databinding.ActivityAddBillBinding;
 import com.example.abhinav.milkcalc.fragments.DatePickerFragment;
@@ -64,9 +64,7 @@ public class AddBillActivity extends AppCompatActivity
     private View.OnClickListener onClickButtonAdd = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Uri uri = getContentResolver()
-                    .insert(BillsContentProvider.CONTENT_URI, BillsTable.buildContentValues(bill));
-            Timber.d("Bill inserted at uri: %s", uri);
+            Toast.makeText(AddBillActivity.this, bill.toString(), Toast.LENGTH_SHORT).show();
             finish();
         }
     };

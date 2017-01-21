@@ -35,11 +35,6 @@
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
-
-        <provider
-            android:name=".database.contentProviders.BillsContentProvider"
-            android:authorities="${applicationId}.bill"
-            android:exported="false" />
     </application>
 
 </manifest>
