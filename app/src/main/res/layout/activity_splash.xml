@@ -35,13 +35,13 @@
         </LinearLayout>
 
         <Button
-            android:visibility="gone"
-            android:id="@+id/btnRetry"
+            android:id="@+id/btnLogin"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="?colorAccent"
-            android:text="Try Again"
-            android:textColor="@android:color/white" />
+            android:text="Login"
+            android:textColor="?colorAccent"
+            android:visibility="gone" />
     </RelativeLayout>
 </layout>
