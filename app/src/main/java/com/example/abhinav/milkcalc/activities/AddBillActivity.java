@@ -2,25 +2,26 @@ package com.example.abhinav.milkcalc.activities;
 
 
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.abhinav.milkcalc.R;
-import com.example.abhinav.milkcalc.database.contentProviders.BillsContentProvider;
-import com.example.abhinav.milkcalc.database.tables.BillsTable;
 import com.example.abhinav.milkcalc.databinding.ActivityAddBillBinding;
 import com.example.abhinav.milkcalc.fragments.DatePickerFragment;
 import com.example.abhinav.milkcalc.pojo.Bill;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
 
-import timber.log.Timber;
+import static com.example.abhinav.milkcalc.utils.Constants.EXTRA_BILL;
 
 public class AddBillActivity extends AppCompatActivity
         implements DatePickerFragment.OnDateSelectedListener {
@@ -28,11 +29,17 @@ public class AddBillActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_bill);
-        bill = new Bill();
+
+        bill = (Bill) getIntent().getSerializableExtra(EXTRA_BILL);
+        if (bill == null) bill = new Bill();
         binding.setBill(bill);
 
+        // Get bills ref
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        billsRef = database.getReference("bills");
+
         // Create an ArrayAdapter using the string array and a default spinner layout
-        final ArrayAdapter<CharSequence> fromAdapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter<CharSequence> fromAdapter = ArrayAdapter.createFromResource(this,
                 R.array.from_diary_location_array, android.R.layout.simple_spinner_item);
         ArrayAdapter<CharSequence> toAdapter = ArrayAdapter.createFromResource(this,
                 R.array.to_diary_location_array, android.R.layout.simple_spinner_item);
@@ -41,9 +48,19 @@ public class AddBillActivity extends AppCompatActivity
         fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Apply the fromAdapter to the spinner
+        // Apply the adapters to the spinner
         binding.fromDairySpinner.setAdapter(fromAdapter);
         binding.toDairySpinner.setAdapter(toAdapter);
+
+        if (!TextUtils.isEmpty(bill.fromDairy)) {
+            int spinnerPosition = fromAdapter.getPosition(bill.fromDairy);
+            binding.fromDairySpinner.setSelection(spinnerPosition);
+        }
+
+        if (!TextUtils.isEmpty(bill.toDairy)) {
+            int spinnerPosition = fromAdapter.getPosition(bill.toDairy);
+            binding.toDairySpinner.setSelection(spinnerPosition);
+        }
 
         binding.fromDairySpinner.setOnItemSelectedListener(onFromDairySelected);
         binding.toDairySpinner.setOnItemSelectedListener(onToDairySelected);
@@ -60,24 +77,26 @@ public class AddBillActivity extends AppCompatActivity
 
     private ActivityAddBillBinding binding;
     private Bill bill;
+    private DatabaseReference billsRef;
 
-    private View.OnClickListener onClickButtonAdd = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Uri uri = getContentResolver()
-                    .insert(BillsContentProvider.CONTENT_URI, BillsTable.buildContentValues(bill));
-            Timber.d("Bill inserted at uri: %s", uri);
-            finish();
+    private View.OnClickListener onClickButtonAdd = v -> {
+        Toast.makeText(AddBillActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+
+        if (TextUtils.isEmpty(bill.serverID)) {
+            // No serverId this means its a new entry
+            billsRef.push().setValue(bill);
+        } else {
+            // Update existing item
+            billsRef.child(bill.serverID).setValue(bill);
         }
+
+        finish();
     };
 
-    private View.OnClickListener onClickDate = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            DatePickerFragment pickerFragment = new DatePickerFragment();
-            pickerFragment.setOnDateSelectedListener(AddBillActivity.this);
-            pickerFragment.show(getFragmentManager(), "datePicker");
-        }
+    private View.OnClickListener onClickDate = v -> {
+        DatePickerFragment pickerFragment = new DatePickerFragment();
+        pickerFragment.setOnDateSelectedListener(AddBillActivity.this);
+        pickerFragment.show(getFragmentManager(), "datePicker");
     };
 
     private AdapterView.OnItemSelectedListener onFromDairySelected = new AdapterView.OnItemSelectedListener() {

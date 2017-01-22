@@ -30,7 +30,7 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
 
         mFirebaseAuth = FirebaseAuth.getInstance();
 
-        binding.btnRetry.setOnClickListener(onClickBtnRetry);
+        binding.btnLogin.setOnClickListener(onClickBtnLogin);
     }
 
     @Override
@@ -42,7 +42,8 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
     @Override
     protected void onPause() {
         super.onPause();
-        mFirebaseAuth.removeAuthStateListener(this);
+        if (mFirebaseAuth != null)
+            mFirebaseAuth.removeAuthStateListener(this);
     }
 
     @Override
@@ -58,6 +59,7 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
                 Toast.makeText(this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
                 finish();
             } else if (resultCode == ResultCodes.RESULT_NO_NETWORK) {
+                switchToOfflineMode();
                 Toast.makeText(this, "Offline", Toast.LENGTH_SHORT).show();
             }
         }
@@ -66,15 +68,19 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
     @Override
     protected void onNetworkStateConnected(@NonNull NetworkInfo networkInfo) {
         super.onNetworkStateConnected(networkInfo);
-        binding.btnRetry.setVisibility(View.VISIBLE);
+        binding.btnLogin.setVisibility(View.VISIBLE);
         binding.linearLayoutOffline.setVisibility(View.GONE);
+
+        if (!isOnline)
+            switchToOnlineMode();
     }
 
     @Override
     protected void onNetworkStateDisconnected() {
         super.onNetworkStateDisconnected();
-        binding.btnRetry.setVisibility(View.GONE);
-        binding.btnRetry.setVisibility(View.VISIBLE);
+        binding.btnLogin.setVisibility(View.GONE);
+        binding.linearLayoutOffline.setVisibility(View.VISIBLE);
+        switchToOfflineMode();
     }
 
     @Override
@@ -84,7 +90,7 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
         if (user != null) {
             startActivity(new Intent(SplashActivity.this, NavigationActivity.class));
             finish();
-        } else if (isNetworkConnected) {
+        } else if (isOnline) {
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
@@ -97,12 +103,18 @@ public class SplashActivity extends BaseActivity implements FirebaseAuth.AuthSta
         }
     }
 
+    private void switchToOnlineMode() {
+        isOnline = true;
+        onAuthStateChanged(mFirebaseAuth);
+    }
+
+    private void switchToOfflineMode() {
+        isOnline = false;
+    }
+
+    private boolean isOnline = true;
     private ActivitySplashBinding binding;
     private FirebaseAuth mFirebaseAuth;
-    private View.OnClickListener onClickBtnRetry = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            onAuthStateChanged(mFirebaseAuth);
-        }
-    };
+    private View.OnClickListener onClickBtnLogin =
+            v -> onAuthStateChanged(mFirebaseAuth);
 }

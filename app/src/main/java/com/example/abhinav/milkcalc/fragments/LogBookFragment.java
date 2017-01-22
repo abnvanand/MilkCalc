@@ -1,20 +1,138 @@
 package com.example.abhinav.milkcalc.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.abhinav.milkcalc.activities.AddLogActivity;
+import com.example.abhinav.milkcalc.adapters.LogsAdapter;
 import com.example.abhinav.milkcalc.databinding.FragmentLogBookBinding;
+import com.example.abhinav.milkcalc.pojo.Log;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-public class LogBookFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.ListIterator;
+
+import timber.log.Timber;
+
+import static com.example.abhinav.milkcalc.utils.Constants.EXTRA_LOG;
+
+public class LogBookFragment extends Fragment implements LogsAdapter.OnItemClickedListener {
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        logsRef = database.getReference("logs");
+        logs = new ArrayList<>();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FragmentLogBookBinding binding = FragmentLogBookBinding.inflate(inflater, container, false);
+        binding = FragmentLogBookBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        adapter = new LogsAdapter(logs);
+        adapter.setOnItemClickedListener(this);
+        binding.recyclerView.setAdapter(adapter);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext(),
+                LinearLayoutManager.VERTICAL, false);
+
+        binding.recyclerView.setLayoutManager(linearLayoutManager);
+        binding.recyclerView.addItemDecoration(
+                new DividerItemDecoration(getActivity(), linearLayoutManager.getOrientation()));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        logs.clear();
+        logsRef.addChildEventListener(mChildEventListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        logsRef.removeEventListener(mChildEventListener);
+    }
+
+    @Override
+    public void onClick(Log log) {
+        Toast.makeText(getActivity(), "Log id" + log.serverID, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getContext(), AddLogActivity.class);
+        intent.putExtra(EXTRA_LOG, log);
+        startActivity(intent);
+    }
+
+    private FragmentLogBookBinding binding;
+    private LogsAdapter adapter;
+    private DatabaseReference logsRef;
+    private ArrayList<Log> logs;
+
+    private ChildEventListener mChildEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            Log value = dataSnapshot.getValue(Log.class);
+            value.serverID = dataSnapshot.getKey();
+            Timber.d("onChildAdded: %s %s", value.date, dataSnapshot.getKey());
+            logs.add(value);
+            adapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            Log value = dataSnapshot.getValue(Log.class);
+            value.serverID = dataSnapshot.getKey();
+            Timber.d("onChildChanged: %s %s", value.date, dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onChildRemoved(final DataSnapshot dataSnapshot) {
+            // FIXME: This will get bad as the list grows. Find a better way
+            // This is called every time you add a new Item to the list if offline feature is enabled.
+            // bcoz firebase adds the child first to cache then removes it
+            // then adds it again as a response from server.
+            // So it would be better if we start form the end moving backwards
+            ListIterator<Log> iterator = logs.listIterator(logs.size());
+
+            while (iterator.hasPrevious()) {
+                if (iterator.previous().serverID.equals(dataSnapshot.getKey())) {
+                    iterator.remove();
+                    break;
+                }
+            }
+            adapter.notifyDataSetChanged();
+            Timber.d("onChildRemoved: %s", dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 }

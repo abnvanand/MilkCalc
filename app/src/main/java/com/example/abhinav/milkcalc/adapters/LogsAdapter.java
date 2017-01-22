@@ -9,60 +9,58 @@ import android.view.ViewGroup;
 
 import com.example.abhinav.milkcalc.BR;
 import com.example.abhinav.milkcalc.R;
-import com.example.abhinav.milkcalc.databinding.ItemBillBinding;
-import com.example.abhinav.milkcalc.pojo.Bill;
+import com.example.abhinav.milkcalc.databinding.ItemLogBinding;
+import com.example.abhinav.milkcalc.pojo.Log;
 
 import java.util.ArrayList;
 
-public class BillsAdapter extends RecyclerView.Adapter<BillsAdapter.ViewHolder> {
-    private ArrayList<Bill> bills;
+public class LogsAdapter extends RecyclerView.Adapter<LogsAdapter.ViewHolder> {
+    private ArrayList<Log> logs;
 
-    public BillsAdapter(ArrayList<Bill> bills) {
-        this.bills = bills;
+    public LogsAdapter(ArrayList<Log> logs) {
+        this.logs = logs;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_bill, parent, false);
+                .inflate(R.layout.item_log, parent, false);
 
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Bill bill = bills.get(position);
+        Log log = logs.get(position);
         ViewDataBinding holderBinding = holder.getBinding();
-        holderBinding.setVariable(BR.bill, bill);
+        holderBinding.setVariable(BR.log, log);
         holderBinding.executePendingBindings();
     }
 
     @Override
     public int getItemCount() {
-        return bills.size();
+        return logs.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ItemBillBinding binding;
+        ItemLogBinding binding;
 
         public ViewHolder(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
 
-
             binding.getRoot().setOnClickListener(
                     v -> {
-                        if (onItemClickedListener == null) return;
+                        if(onItemClickedListener==null) return;
 
-                        onItemClickedListener.onClick(binding.getBill());
+                        onItemClickedListener.onClick(binding.getLog());
                     });
         }
 
-        public ItemBillBinding getBinding() {
+        public ItemLogBinding getBinding() {
             return binding;
         }
     }
-
 
     private OnItemClickedListener onItemClickedListener;
 
@@ -71,6 +69,6 @@ public class BillsAdapter extends RecyclerView.Adapter<BillsAdapter.ViewHolder> 
     }
 
     public interface OnItemClickedListener {
-        void onClick(Bill bill);
+        void onClick(Log log);
     }
 }
