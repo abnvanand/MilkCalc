@@ -1,6 +1,7 @@
 package com.example.abhinav.milkcalc.activities;
 
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import timber.log.Timber;
 
+@SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
     protected boolean isNetworkConnected;
 
