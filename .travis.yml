@@ -13,3 +13,5 @@ android:
 before_install:
 - openssl aes-256-cbc -K $encrypted_d36b77379472_key -iv $encrypted_d36b77379472_iv
   -in google-services.json.enc -out app/google-services.json -d
+script:
+  - ./gradlew assembleDebug
