@@ -15,3 +15,7 @@ before_install:
   -in google-services.json.enc -out app/google-services.json -d
 script:
   - ./gradlew assembleDebug
+branches:
+  only:
+  - master
+  - develop
