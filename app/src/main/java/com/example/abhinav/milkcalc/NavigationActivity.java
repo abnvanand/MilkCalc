@@ -39,14 +39,11 @@ public class NavigationActivity extends AppCompatActivity
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         currentBackStackEntry = LogBookFragment.class.getSimpleName();
-        binding.appBarNavigation.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currentBackStackEntry.equals(BillsFragment.class.getSimpleName())) {
-                    startActivity(new Intent(NavigationActivity.this, AddBillActivity.class));
-                } else if (currentBackStackEntry.equals(LogBookFragment.class.getSimpleName())) {
-                    startActivity(new Intent(NavigationActivity.this, AddLogActivity.class));
-                }
+        binding.appBarNavigation.fab.setOnClickListener(view -> {
+            if (currentBackStackEntry.equals(BillsFragment.class.getSimpleName())) {
+                startActivity(new Intent(NavigationActivity.this, AddBillActivity.class));
+            } else if (currentBackStackEntry.equals(LogBookFragment.class.getSimpleName())) {
+                startActivity(new Intent(NavigationActivity.this, AddLogActivity.class));
             }
         });
 
@@ -111,29 +108,34 @@ public class NavigationActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_log_book) {
-            currentBackStackEntry = LogBookFragment.class.getSimpleName();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(),
-                            logBookFragment,
-                            LogBookFragment.class.getSimpleName())
-                    .commit();
-        } else if (id == R.id.nav_bill) {
-            currentBackStackEntry = BillsFragment.class.getSimpleName();
+        switch (id) {
+            case R.id.nav_log_book:
+                currentBackStackEntry = LogBookFragment.class.getSimpleName();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(),
+                                logBookFragment,
+                                LogBookFragment.class.getSimpleName())
+                        .commit();
+                break;
+            case R.id.nav_bill:
+                currentBackStackEntry = BillsFragment.class.getSimpleName();
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(),
-                            billsFragment,
-                            BillsFragment.class.getSimpleName())
-                    .commit();
-        } else if (id == R.id.nav_manage) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(binding.appBarNavigation.contentNavigation.fragmentContainer.getId(),
+                                billsFragment,
+                                BillsFragment.class.getSimpleName())
+                        .commit();
+                break;
+            case R.id.nav_manage:
 
-        } else if (id == R.id.nav_logout) {
-            AuthUI.getInstance().signOut(this);
+                break;
+            case R.id.nav_logout:
+                AuthUI.getInstance().signOut(this);
+                break;
         }
 
         binding.drawerLayout.closeDrawer(GravityCompat.START);
